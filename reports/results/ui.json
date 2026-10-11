@@ -1,0 +1,11 @@
+{
+  "browser_verified": true,
+  "url": "http://localhost:4213",
+  "rating_events": 20000263,
+  "rating_users": 138493,
+  "rated_movies": 26744,
+  "rollup_rows": 331,
+  "warehouse_read_only": true,
+  "load_blocked_while_ui_open": true,
+  "close_instruction_verified": true
+}

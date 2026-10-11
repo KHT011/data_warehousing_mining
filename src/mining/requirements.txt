@@ -1,0 +1,3 @@
+# Inactive: install only inside Docker when the mining phase is resumed.
+scikit-learn==1.6.1
+xgboost-cpu==2.1.4

@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools==75.6.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "movielens-project"
+version = "0.1.0"
+requires-python = ">=3.11,<3.13"
+description = "Local MovieLens 20M academic warehouse"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+norecursedirs = ["mining"]

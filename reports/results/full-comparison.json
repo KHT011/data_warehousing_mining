@@ -1,0 +1,37 @@
+{
+  "created_at": "2026-10-11T10:27:48.000416+00:00",
+  "matches": true,
+  "seconds": 760.6727757829999,
+  "signature": {
+    "validation": {
+      "checks": {
+        "orphan_users": 0,
+        "orphan_movies": 0,
+        "orphan_dates": 0,
+        "invalid_ratings": 0,
+        "genre_weights": 0,
+        "movies_without_genres": 0
+      },
+      "ratings": 20000263,
+      "users": 138493,
+      "movies": 27278
+    },
+    "facts": [
+      20000263,
+      70511498.5,
+      12286026728922136489
+    ],
+    "movies": [
+      27278,
+      10128876350484793540
+    ],
+    "users": [
+      138493,
+      18169362226061067302
+    ],
+    "metadata": [
+      27278,
+      7796763855119124952
+    ]
+  }
+}

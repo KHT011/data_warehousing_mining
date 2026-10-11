@@ -1,0 +1,42 @@
+services:
+  project:
+    build: .
+    image: movielens-project:local
+    init: true
+    restart: unless-stopped
+    command: ["idle"]
+    environment:
+      TMDB_TOKEN: ${TMDB_TOKEN:-}
+    ports:
+      - "127.0.0.1:4213:4213"
+    volumes:
+      - ./data:/app/data
+      - ./warehouse:/app/warehouse
+      - ./reports:/app/reports
+    shm_size: 1gb
+  airflow:
+    image: movielens-project:local
+    init: true
+    restart: unless-stopped
+    command: ["airflow", "standalone"]
+    stop_grace_period: 60s
+    environment:
+      TMDB_TOKEN: ${TMDB_TOKEN:-}
+      AIRFLOW__LOGGING__BASE_LOG_FOLDER: /app/reports/airflow/task-logs
+      AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session
+    ports:
+      - "127.0.0.1:${AIRFLOW_PORT:-8080}:8080"
+    volumes:
+      - ./data:/app/data
+      - ./warehouse:/app/warehouse
+      - ./reports:/app/reports
+      - airflow-state:/opt/airflow
+    shm_size: 1gb
+    healthcheck:
+      test: ["CMD", "/opt/airflow-venv/bin/python", "-c", "import json,urllib.request; d=json.load(urllib.request.urlopen('http://localhost:8080/health',timeout=5)); assert d['metadatabase']['status']=='healthy' and d['scheduler']['status']=='healthy'"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+volumes:
+  airflow-state:

@@ -1,0 +1,41 @@
+{
+  "created_at": "2026-10-11T10:32:10.150019+00:00",
+  "dag": "movielens_pipeline",
+  "run_id": "simplified_smoke_e16c0d305f28",
+  "state": "success",
+  "seconds": 53.66570146700042,
+  "synthetic": true,
+  "live": false,
+  "tasks": [
+    {
+      "task_id": "extract",
+      "state": "success",
+      "duration": 0.729837,
+      "try_number": 1
+    },
+    {
+      "task_id": "transform",
+      "state": "success",
+      "duration": 31.479979,
+      "try_number": 1
+    },
+    {
+      "task_id": "load",
+      "state": "success",
+      "duration": 2.640222,
+      "try_number": 1
+    },
+    {
+      "task_id": "validate",
+      "state": "success",
+      "duration": 0.555071,
+      "try_number": 1
+    },
+    {
+      "task_id": "olap",
+      "state": "success",
+      "duration": 3.003367,
+      "try_number": 1
+    }
+  ]
+}

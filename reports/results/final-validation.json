@@ -1,0 +1,32 @@
+{
+  "full_signatures_unchanged": true,
+  "full_ratings": 20000263,
+  "smoke_ratings": 1800,
+  "synthetic_tmdb_staged": true,
+  "type3_demo": [
+    {
+      "run": "A",
+      "runtime": 90,
+      "previous_runtime": null,
+      "language": "en",
+      "previous_language": null,
+      "facts_and_keys_unchanged": true
+    },
+    {
+      "run": "B",
+      "runtime": 90,
+      "previous_runtime": null,
+      "language": "en",
+      "previous_language": null,
+      "facts_and_keys_unchanged": true
+    },
+    {
+      "run": "C",
+      "runtime": 95,
+      "previous_runtime": 90,
+      "language": "en",
+      "previous_language": null,
+      "facts_and_keys_unchanged": true
+    }
+  ]
+}

@@ -1,0 +1,207 @@
+{
+  "created_at": "2026-10-11T10:27:38.267155+00:00",
+  "synthetic": false,
+  "ratings": 20000263,
+  "duckdb": "1.2.2",
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.36",
+  "processor": "",
+  "cpu_count": 16,
+  "container_memory_bytes": "MemTotal:        7829152 kB",
+  "settings": {
+    "threads": 2,
+    "memory_limit": "6GB"
+  },
+  "parameters": {
+    "start_year": 1995,
+    "end_year": 2015,
+    "genres": [
+      "Drama",
+      "Comedy"
+    ],
+    "min_support": 100
+  },
+  "cache": "warm repeated runs; no cold-cache claim",
+  "aggregate_build_seconds": 0.9689973829999872,
+  "results": [
+    {
+      "query": "Q1",
+      "variant": "fact_scan",
+      "rows": 331,
+      "warmup_seconds": 0.5463344889999462,
+      "repetitions_seconds": [
+        0.5439850290001687,
+        0.5359932559999834,
+        0.5331091300001845,
+        0.5235264469999947,
+        0.521824370999866
+      ],
+      "median_seconds": 0.5331091300001845,
+      "min_seconds": 0.521824370999866,
+      "max_seconds": 0.5439850290001687,
+      "std_seconds": 0.008193581460308155,
+      "correctness": "baseline and aggregate agree"
+    },
+    {
+      "query": "Q2",
+      "variant": "fact_scan",
+      "rows": 434,
+      "warmup_seconds": 2.120512860999952,
+      "repetitions_seconds": [
+        2.110639993000177,
+        2.3187819679999393,
+        2.1524856170001385,
+        2.5238780879999467,
+        2.177119963999985
+      ],
+      "median_seconds": 2.177119963999985,
+      "min_seconds": 2.110639993000177,
+      "max_seconds": 2.5238780879999467,
+      "std_seconds": 0.15084122526783403,
+      "correctness": "baseline and aggregate agree"
+    },
+    {
+      "query": "Q3",
+      "variant": "fact_scan",
+      "rows": 504,
+      "warmup_seconds": 0.6006843469999694,
+      "repetitions_seconds": [
+        0.5821089999999458,
+        0.578614688000016,
+        0.5814771860000292,
+        0.5753966469999341,
+        0.5755158499998743
+      ],
+      "median_seconds": 0.578614688000016,
+      "min_seconds": 0.5753966469999341,
+      "max_seconds": 0.5821089999999458,
+      "std_seconds": 0.002841210202900018,
+      "correctness": "baseline and aggregate agree"
+    },
+    {
+      "query": "Q4",
+      "variant": "fact_scan",
+      "rows": 20,
+      "warmup_seconds": 0.07042730500006655,
+      "repetitions_seconds": [
+        0.06956439900000078,
+        0.06908354000006511,
+        0.06902645099989968,
+        0.07244394800000009,
+        0.06943829600004392
+      ],
+      "median_seconds": 0.06943829600004392,
+      "min_seconds": 0.06902645099989968,
+      "max_seconds": 0.07244394800000009,
+      "std_seconds": 0.0012826943008027215,
+      "correctness": "baseline and aggregate agree"
+    },
+    {
+      "query": "Q5",
+      "variant": "fact_scan",
+      "rows": 3732,
+      "warmup_seconds": 2.8872651799999858,
+      "repetitions_seconds": [
+        2.66433298700008,
+        2.824179501000117,
+        2.791701681999939,
+        2.8169744199999514,
+        2.738010970000005
+      ],
+      "median_seconds": 2.791701681999939,
+      "min_seconds": 2.66433298700008,
+      "max_seconds": 2.824179501000117,
+      "std_seconds": 0.05959527252460164,
+      "correctness": "baseline and aggregate agree"
+    },
+    {
+      "query": "Q1",
+      "variant": "preaggregate",
+      "rows": 331,
+      "warmup_seconds": 0.0387889000000996,
+      "repetitions_seconds": [
+        0.03756595599998036,
+        0.04246754599989799,
+        0.03715813899998466,
+        0.040124959999957355,
+        0.03739190999999664
+      ],
+      "median_seconds": 0.03756595599998036,
+      "min_seconds": 0.03715813899998466,
+      "max_seconds": 0.04246754599989799,
+      "std_seconds": 0.0020643306266655897,
+      "correctness": "baseline and aggregate agree"
+    },
+    {
+      "query": "Q2",
+      "variant": "preaggregate",
+      "rows": 434,
+      "warmup_seconds": 0.15204630100015493,
+      "repetitions_seconds": [
+        0.15020937300005244,
+        0.17172764900010407,
+        0.15577284699998017,
+        0.20988487599993277,
+        0.14464220500008196
+      ],
+      "median_seconds": 0.15577284699998017,
+      "min_seconds": 0.14464220500008196,
+      "max_seconds": 0.20988487599993277,
+      "std_seconds": 0.02352777712548742,
+      "correctness": "baseline and aggregate agree"
+    },
+    {
+      "query": "Q3",
+      "variant": "preaggregate",
+      "rows": 504,
+      "warmup_seconds": 0.0493829970000661,
+      "repetitions_seconds": [
+        0.047891233999962424,
+        0.04686420000007274,
+        0.04677031000005627,
+        0.04730162600003496,
+        0.049948428999869066
+      ],
+      "median_seconds": 0.04730162600003496,
+      "min_seconds": 0.04677031000005627,
+      "max_seconds": 0.049948428999869066,
+      "std_seconds": 0.0011660512314847972,
+      "correctness": "baseline and aggregate agree"
+    },
+    {
+      "query": "Q4",
+      "variant": "preaggregate",
+      "rows": 20,
+      "warmup_seconds": 0.013383697999870492,
+      "repetitions_seconds": [
+        0.012972702999832109,
+        0.012497766000024058,
+        0.015215826000030575,
+        0.013690873999848918,
+        0.013098735999847122
+      ],
+      "median_seconds": 0.013098735999847122,
+      "min_seconds": 0.012497766000024058,
+      "max_seconds": 0.015215826000030575,
+      "std_seconds": 0.0009406278272837507,
+      "correctness": "baseline and aggregate agree"
+    },
+    {
+      "query": "Q5",
+      "variant": "preaggregate",
+      "rows": 3732,
+      "warmup_seconds": 0.3412668319999739,
+      "repetitions_seconds": [
+        0.33809966199987684,
+        0.33424146900006235,
+        0.3194689289998678,
+        0.32737497299990537,
+        0.39399820000016916
+      ],
+      "median_seconds": 0.33424146900006235,
+      "min_seconds": 0.3194689289998678,
+      "max_seconds": 0.39399820000016916,
+      "std_seconds": 0.026452728493484293,
+      "correctness": "baseline and aggregate agree"
+    }
+  ]
+}

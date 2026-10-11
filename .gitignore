@@ -1,0 +1,62 @@
+# Credentials and local configuration (keep the template)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python, notebooks and development caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.coverage
+htmlcov/
+build/
+dist/
+
+# Original datasets, API snapshots, staging and models stay local
+/data/
+/models/
+*.zip
+*.parquet
+*.parquet/
+*.duckdb
+*.duckdb.*
+*.wal
+*.lock
+
+# Runtime output; publish only small, selected academic results
+/reports/*
+!/reports/results/
+/reports/results/*
+!/reports/results/IMPLEMENTATION.md
+!/reports/results/olap.json
+!/reports/results/olap.csv
+!/reports/results/warehouse.json
+!/reports/results/full-comparison.json
+!/reports/results/final-validation.json
+!/reports/results/airflow.json
+!/reports/results/ui.json
+/airflow/logs/
+/airflow/airflow.cfg
+/airflow/airflow.db*
+/airflow/standalone_admin_password.txt
+*.log
+*.pid
+*.tmp
+*.bak
+
+# Editor and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+/docs
