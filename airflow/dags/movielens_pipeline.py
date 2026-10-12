@@ -17,7 +17,8 @@ with DAG('movielens_pipeline', start_date=datetime(2026, 10, 10, tzinfo=timezone
              'smoke': Param(False, type='boolean', description='Isolated synthetic offline demo'),
              'live': Param(False, type='boolean', description='Explicit TMDB; network and token required'),
              'tmdb_limit': Param(500, type=['integer', 'string'], minimum=1, pattern=r'^(all|[1-9][0-9]*)$'),
-             'resume_run': Param('', type='string', description='Optional recorded staging run to recover'),
+             'resume_run': Param(None, type=['null', 'string'],
+                                 description='Optional recorded staging run ID; leave blank for a fresh run'),
          }, tags=['academic', 'warehouse']) as dag:
     previous = None
     for step in ('extract', 'transform', 'load', 'validate', 'olap'):

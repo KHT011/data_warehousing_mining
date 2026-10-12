@@ -1,6 +1,9 @@
 FROM python:3.11.11-slim-bookworm@sha256:081075da77b2b55c23c088251026fb69a7b2bf92471e491ff5fd75c192fd38e5
 RUN apt-get update && apt-get install -y --no-install-recommends openjdk-17-jre-headless libgomp1 && rm -rf /var/lib/apt/lists/*
-ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 PYTHONUNBUFFERED=1 PYTHONPATH=/app/src SPARK_LOCAL_IP=127.0.0.1 OMP_NUM_THREADS=2
+# Debian installs Java under a different directory on ARM64 and AMD64.
+# Resolve the installed binary while building; keep one stable path for Spark.
+RUN java_binary="$(readlink -f /usr/bin/java)" && ln -s "$(dirname "$(dirname "$java_binary")")" /opt/java
+ENV JAVA_HOME=/opt/java PYTHONUNBUFFERED=1 PYTHONPATH=/app/src SPARK_LOCAL_IP=127.0.0.1 OMP_NUM_THREADS=2
 WORKDIR /app
 COPY requirements.txt requirements.lock.txt pyproject.toml ./
 RUN pip install --no-cache-dir -r requirements.txt -c requirements.lock.txt && pip check

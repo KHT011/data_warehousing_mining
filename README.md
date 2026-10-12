@@ -5,15 +5,30 @@ Airflow runs the pipeline. Mining code is retained but inactive.
 
 ## 1. Start the project
 
-Use Docker Desktop with Linux containers and about 8 GB of memory. Run these commands from the project folder:
+Use Docker Desktop with Linux containers. Start with 8 GB allocated to Docker
+for manual full-data runs and stop other heavy containers. The image selects
+the build machine's native architecture, including Apple Silicon. If you
+previously exported `DOCKER_DEFAULT_PLATFORM=linux/amd64`, unset it first.
+Airflow is optional and starts only when explicitly enabled.
+
+Run these commands from the project folder:
 
 ```sh
+unset DOCKER_DEFAULT_PLATFORM
 docker compose build
 docker compose up -d
 docker compose exec project python run_pipeline.py smoke
 ```
 
 The smoke run uses synthetic MovieLens and cached synthetic TMDB data. It needs no API token and does not change the full warehouse. Dependencies are installed inside Docker; the initial build needs internet access.
+
+The manual container is capped at 6 GB and 2 CPUs. Spark's default heap is 3 GB;
+DuckDB's default engine limit is 4 GB with one query thread. These are separate stages with additional
+memory overhead, not guarantees of total process usage. Configure the budgets
+through `.env`; see [Docker resource configuration](DOCKER_RESOURCES.md).
+
+**For an existing running collection, wait for its completion before rebuilding
+or recreating containers.** The resource update takes effect after recreation.
 
 ## 2. Build the full warehouse
 
@@ -44,7 +59,19 @@ The UI needs internet for frontend assets. Press **Ctrl+C** before running anoth
 
 ## 4. Run through Airflow
 
-Open [localhost:8080](http://localhost:8080) and log in as **admin**. Get the password privately:
+Enable the optional Airflow service:
+
+```sh
+docker compose --profile airflow up -d
+```
+
+Airflow runs Spark/DuckDB jobs inside its own container, so its cap is 7 GB and
+3 CPUs. Start with 12 GB allocated to Docker for full runs through Airflow if
+your computer has enough RAM; leave memory for macOS and other applications.
+The default manual container remains idle while Airflow runs the workflow.
+
+Open [localhost:8080](http://localhost:8080), or your configured `AIRFLOW_PORT`,
+and log in as **admin**. Get the password privately:
 
 ```sh
 docker compose exec airflow cat /opt/airflow/standalone_admin_password.txt
@@ -54,13 +81,24 @@ Enable and trigger **movielens_pipeline**. Choose `smoke=true` for a demo or `sm
 
 The five tasks are **extract → transform → load → validate → olap**.
 
+For a fresh run, leave `resume_run` blank. It is an optional recovery identifier,
+not a field where you should enter the word `empty`.
+
+The load recovery update pins DuckDB **1.4.4**, forwards engine output into
+Airflow's task logs, and disables insertion-order preservation during loading
+to reduce memory use. The first full-data retry reached the 4 GB DuckDB memory
+cap at commit; the next retry succeeded with all five Airflow tasks green and
+all 20,000,263 ratings published. See [Load recovery](LOAD_RECOVERY.md) for the
+run evidence.
+
 ## Useful commands
 
 ```sh
 docker compose exec project bash                    # Explore the container
 docker compose exec project python -m pytest -q     # Run tests
-docker compose stop                                # Stop both services
-docker compose start                               # Start them again
+docker compose --profile airflow stop              # Stop project and optional Airflow
+docker compose up -d project                        # Start the manual service
+docker compose --profile airflow up -d              # Start with Airflow
 ```
 
 Containers stay running until stopped. Data remains in the project folder; Airflow state uses a Docker volume.

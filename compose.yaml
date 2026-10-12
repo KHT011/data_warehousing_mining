@@ -1,3 +1,11 @@
+x-pipeline-environment: &pipeline-environment
+  TMDB_TOKEN: ${TMDB_TOKEN:-}
+  SPARK_CORES: ${SPARK_CORES:-2}
+  SPARK_SHUFFLE_PARTITIONS: ${SPARK_SHUFFLE_PARTITIONS:-8}
+  SPARK_DRIVER_MEMORY: ${SPARK_DRIVER_MEMORY:-3g}
+  DUCKDB_THREADS: ${DUCKDB_THREADS:-1}
+  DUCKDB_MEMORY_LIMIT: ${DUCKDB_MEMORY_LIMIT:-4GB}
+
 services:
   project:
     build: .
@@ -5,8 +13,9 @@ services:
     init: true
     restart: unless-stopped
     command: ["idle"]
-    environment:
-      TMDB_TOKEN: ${TMDB_TOKEN:-}
+    cpus: ${PROJECT_CPUS:-2.0}
+    mem_limit: ${PROJECT_MEMORY_LIMIT:-6g}
+    environment: *pipeline-environment
     ports:
       - "127.0.0.1:4213:4213"
     volumes:
@@ -16,12 +25,16 @@ services:
     shm_size: 1gb
   airflow:
     image: movielens-project:local
+    # Explicitly enable orchestration; manual runs do not need this service.
+    profiles: ["airflow"]
     init: true
     restart: unless-stopped
     command: ["airflow", "standalone"]
     stop_grace_period: 60s
+    cpus: ${AIRFLOW_CPUS:-3.0}
+    mem_limit: ${AIRFLOW_MEMORY_LIMIT:-7g}
     environment:
-      TMDB_TOKEN: ${TMDB_TOKEN:-}
+      <<: *pipeline-environment
       AIRFLOW__LOGGING__BASE_LOG_FOLDER: /app/reports/airflow/task-logs
       AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session
     ports:

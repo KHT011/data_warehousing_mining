@@ -1,0 +1,7 @@
+{
+  "source": "warehouse/movielens.duckdb",
+  "backup": "warehouse/backups/movielens-before-duckdb-upgrade-20261012.duckdb",
+  "bytes": 3994824704,
+  "sha256": "3eb163f564894040325e26592f8e6eb32341174540ed0ec24092842720a71366",
+  "engine_before": "1.2.2"
+}

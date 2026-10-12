@@ -11,17 +11,26 @@ The active flow is MovieLens CSV/cached TMDB → Spark → Parquet → DuckDB �
 - This was an uninterrupted offline full reload. TMDB coverage was 0 payloads; unenriched metadata was preserved honestly.
 - Timings by stage: extract 38.91s, transform 321.44s, load 337.66s, validate 1.53s, olap 52.78s.
 
+## Airflow full-data recovery — 12 October 2026
+
+- Airflow run `manual__2026-10-12T08:13:56+00:00` completed all five tasks successfully after retrying only `load`, `validate`, and `olap`.
+- DuckDB **1.4.4**, one thread, 4 GB engine memory cap, Linux ARM64 Docker container. Loading used 500,000-rating batches and disabled insertion-order preservation after the first 1.4.4 attempt reached its memory cap at commit.
+- Final warehouse: **20,000,263 ratings**, **138,493 users**, **27,278 movies**; all six integrity checks returned zero violations.
+- The run was offline and reused cached metadata for **26,698 movies**; recovery did not repeat the TMDb fetch or Spark transformation.
+- Airflow stage timings: extract 32.40s, transform 120.80s, load 898.84s, validate 1.16s, OLAP 85.41s. Load includes the successful retry and candidate publication.
+- Full run details are in `reports/runs/airflow-7ad6db2270f8de79ba22.json`; load progress is in `reports/quality/airflow-7ad6db2270f8de79ba22-load-progress.json`.
+
 ## OLAP benchmarks
 
-One warm-up followed by five measured warm repetitions per query/variant. Fact and monthly-preaggregate results agree within floating-point tolerance. These are local measured results; no cold-cache claim is made.
+One warm-up followed by five measured warm repetitions per query/variant. Fact and monthly-preaggregate results agree within floating-point tolerance. These are local measured results; no cold-cache claim is made. The following are regenerated results from the 12 October Airflow run, using one DuckDB thread.
 
 | Query | Fact median (s) | Preaggregate median (s) | Results |
 |---|---:|---:|---|
-| Q1 | 0.5331 | 0.0376 | agree |
-| Q2 | 2.1771 | 0.1558 | agree |
-| Q3 | 0.5786 | 0.0473 | agree |
-| Q4 | 0.0694 | 0.0131 | agree |
-| Q5 | 2.7917 | 0.3342 | agree |
+| Q1 | 1.0049 | 0.0713 | agree |
+| Q2 | 4.4658 | 0.2231 | agree |
+| Q3 | 1.0861 | 0.0721 | agree |
+| Q4 | 0.1202 | 0.0125 | agree |
+| Q5 | 3.9713 | 0.3469 | agree |
 
 Detailed timings, results and EXPLAIN ANALYZE evidence are in `olap.json`, `olap.csv`, query-result CSVs and analysis text files.
 

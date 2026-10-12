@@ -1,5 +1,6 @@
 """Airflow passes only arguments; processing uses the core Python runtime."""
 import hashlib
+import logging
 import os
 import subprocess
 
@@ -34,4 +35,25 @@ def build_command(step, params, config_path=None, run_id='manual'):
 
 
 def run_step(step, params, run_id='manual', config_path=None, project_root='/app'):
-    subprocess.run(build_command(step, params, config_path, run_id), cwd=project_root, check=True)
+    command = build_command(step, params, config_path, run_id)
+    environment = {**os.environ, 'PYTHONUNBUFFERED': '1', 'PYTHONFAULTHANDLER': '1'}
+    # Native engine messages go to OS stderr. Forward them through Airflow's
+    # logger so the task Logs tab includes the cause, not just CalledProcessError.
+    logger = logging.getLogger(__name__)
+    with subprocess.Popen(command, cwd=project_root, env=environment,
+                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                          text=True, errors='replace', bufsize=1) as process:
+        try:
+            for line in process.stdout:
+                logger.info('pipeline | %s', line.rstrip())
+            returncode = process.wait()
+        except BaseException:
+            process.terminate()
+            try:
+                process.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait()
+            raise
+    if returncode:
+        raise subprocess.CalledProcessError(returncode, command)

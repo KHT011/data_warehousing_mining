@@ -16,7 +16,9 @@ INSERT INTO DimDate
  SELECT DISTINCT date_key,cast(rating_timestamp AS DATE),year(rating_timestamp),quarter(rating_timestamp),month(rating_timestamp),monthname(rating_timestamp),day(rating_timestamp),isodow(rating_timestamp)
  FROM stage_ratings WHERE date_key NOT IN (SELECT date_key FROM DimDate);
 
-INSERT INTO FactRatings SELECT rating_event_id,user_key,movie_key,date_key,rating,rating_timestamp
+-- MATERIALIZE RATING INPUT
+-- No indexes on this private candidate table: load.py commits its rows in batches.
+CREATE TABLE _load_ratings AS SELECT rating_event_id,user_key,movie_key,date_key,rating,rating_timestamp
  FROM stage_ratings JOIN DimUser USING(user_id) JOIN DimMovie USING(movie_id)
  ORDER BY date_key,movie_key,user_key;
 
