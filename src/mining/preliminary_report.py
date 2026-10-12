@@ -13,6 +13,9 @@ from mining.preliminary import COLORS, figure
 def build_report():
     root = Path('reports/results/mining_preliminary')
     r = json.loads((root/'latest.json').read_text())
+    if r.get('clustering') is None:
+        from mining.preliminary_milestone import build_report as milestone_report
+        return milestone_report(r)
     out = Path(r['results_directory'])
     class Context:
         pass

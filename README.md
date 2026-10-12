@@ -1,7 +1,7 @@
 # MovieLens 20M warehouse
 
 MovieLens + TMDB → PySpark ETL → Parquet → DuckDB warehouse → OLAP queries.
-Airflow runs the warehouse pipeline. Preliminary EDA, full-user clustering and
+Airflow runs the warehouse pipeline. Preliminary EDA, user descriptors and
 chronological rating baselines have a separate Docker mining service; the
 older feature-model experiments remain inactive.
 
@@ -106,11 +106,12 @@ The mining image uses the existing `movielens-project:local` image as its base;
 build the project image first on a new machine. It mounts the warehouse read-only
 and executes [the preliminary notebook](notebooks/05_mining_preliminary.ipynb).
 EDA and chronological global/movie-average baselines use every rating event.
-Clustering fits/assigns every rating-active user; only the silhouette metric
-uses a fixed small subset, with full-user quality measures alongside it.
+User descriptors include every rating-active user. The milestone notebook
+does not fit clusters; the earlier executed experiment is preserved in
+`notebooks/archive/`.
 
-Results, charts and a report section are saved under
-`reports/results/mining_preliminary/`. Feature/assignment/model artifacts are
+Numerical results are saved under `reports/results/mining_preliminary/`.
+The simple report section and its charts are under `reports/results/mining_milestone/`. Feature/assignment/model artifacts are
 under `data/processed/mining_preliminary/`. See [the mining run guide](MINING_PRELIMINARY.md).
 
 ## Useful commands

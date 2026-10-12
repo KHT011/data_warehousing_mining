@@ -143,7 +143,7 @@ def run_eda(ctx):
     return summary
 
 
-def prepare_features(ctx):
+def prepare_features(ctx, descriptive_only=False):
     ctx.phase('H2: build weighted genre shares for every rating-active user')
     begin = time.perf_counter()
     users = ctx.con.execute('SELECT * FROM prelim_users ORDER BY user_key').fetchdf()
@@ -157,7 +157,9 @@ def prepare_features(ctx):
         raise ValueError('User genre shares do not sum to one')
     users['log_rating_count'] = np.log1p(users.rating_count)
     users['log_activity_span_days'] = np.log1p(users.activity_span_days)
-    features = ['log_rating_count', 'mean_rating', 'rating_std', 'high_rating_share', 'log_activity_span_days'] + list(wide.columns)
+    behavior = (['rating_count', 'mean_rating', 'rating_std', 'high_rating_share', 'activity_span_days']
+                if descriptive_only else ['log_rating_count', 'mean_rating', 'rating_std', 'high_rating_share', 'log_activity_span_days'])
+    features = behavior + list(wide.columns)
     if not np.isfinite(users[features].to_numpy()).all():
         raise ValueError('User features contain missing or non-finite values')
     users.to_parquet(ctx.data / 'user_features.parquet', index=False)
@@ -167,6 +169,8 @@ def prepare_features(ctx):
         'analysis_unit': 'one rating-active user', 'users': len(users),
         'all_ratings_used': ctx.before['ratings'], 'features': features,
         'definitions': {
+            'rating_count': 'total historical rating events',
+            'activity_span_days': 'days between first and last historical rating',
             'log_rating_count': 'log(1 + total user rating events)',
             'mean_rating': 'average historical rating',
             'rating_std': 'population standard deviation of historical ratings',
@@ -174,7 +178,9 @@ def prepare_features(ctx):
             'log_activity_span_days': 'log(1 + days between first and last rating)',
             'genre_*': 'sum of fractional genre allocations / user rating count',
         },
-        'preprocessing': 'StandardScaler on descriptive user features; zero genre exposure means no observed rated movies of that genre',
+        'preprocessing': ('raw user descriptors; no scaling or clustering applied' if descriptive_only
+                          else 'log count/span prepared; StandardScaler applied later inside run_clustering'),
+        'genre_zero_policy': 'zero means no observed ratings in that genre, not dislike',
         'missing_feature_values': 0, 'numeric_imputation': 'none required',
         'excluded': ['user/movie IDs as numeric predictors', 'TMDb popularity/votes', 'tags/genome not present in current rating warehouse'],
         'timing_scope': 'full history is valid for descriptive clustering; these summaries are not H3 predictive features',
@@ -384,8 +390,16 @@ def finalize(ctx, eda, clusters, baselines):
         'results_directory': str(ctx.out), 'derived_data_directory': str(ctx.data)}
     save_json(ctx.out / 'run.json', result)
     save_json(ctx.root / 'latest.json', result)
-    (ctx.out / 'REPORT_SECTION.md').write_text(report_section(ctx, eda, clusters, baselines), encoding='utf-8')
-    (ctx.root / 'REPORT_SECTION.md').write_text(report_section(ctx, eda, clusters, baselines, ctx.run_id+'/'), encoding='utf-8')
+    if clusters is None:
+        from mining.preliminary_milestone import build_report
+        result['scope'] = 'EDA, prepared user descriptors and chronological rating baselines; clustering deferred'
+        result['prepared_features'] = {'users': eda['rating_users'], 'features': ctx.features}
+        save_json(ctx.out / 'run.json', result)
+        save_json(ctx.root / 'latest.json', result)
+        build_report(result)
+    else:
+        (ctx.out / 'REPORT_SECTION.md').write_text(report_section(ctx, eda, clusters, baselines), encoding='utf-8')
+        (ctx.root / 'REPORT_SECTION.md').write_text(report_section(ctx, eda, clusters, baselines, ctx.run_id+'/'), encoding='utf-8')
     ctx.phase('complete')
     return result
 
@@ -412,8 +426,8 @@ def main():
         nbformat.write(nb, path)
     result = json.loads(Path('reports/results/mining_preliminary/latest.json').read_text())
     print(json.dumps({'status': result['status'], 'run_id': result['run_id'],
-          'ratings': result['eda']['ratings'], 'users_clustered': result['clustering']['users'],
-          'selected_k': result['clustering']['selected_k'],
+          'ratings': result['eda']['ratings'], 'users_prepared': result['eda']['rating_users'],
+          'clustering_performed': result.get('clustering') is not None,
           'test_baselines': [r for r in result['baselines']['metrics'] if r['split']=='test'],
           'elapsed_seconds': result['elapsed_seconds']}, indent=2), flush=True)
 

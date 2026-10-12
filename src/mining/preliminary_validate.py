@@ -15,20 +15,26 @@ def validate_result():
     r = json.loads((root / 'latest.json').read_text())
     out = Path(r['results_directory'])
     features = pd.read_parquet(Path(r['derived_data_directory']) / 'user_features.parquet')
-    labels = pd.read_parquet(Path(r['derived_data_directory']) / 'user_clusters.parquet')
-    assert len(features) == len(labels) == r['eda']['rating_users']
-    assert features.user_key.is_unique and labels.user_key.is_unique
-    assert np.array_equal(features.user_key.to_numpy(), labels.user_key.to_numpy())
-    with (Path(r['derived_data_directory']) / 'clustering_model.pkl').open('rb') as f:
-        model = pickle.load(f)
-    predictions = model['model'].predict(model['scaler'].transform(features[model['features']]))
-    assert np.array_equal(predictions, labels.cluster.to_numpy())
-    genre = [f for f in model['features'] if f.startswith('genre_')]
+    assert len(features) == r['eda']['rating_users'] and features.user_key.is_unique
+    definitions = json.loads((out / 'feature_definitions.json').read_text())
+    columns = definitions['features']
+    genre = [name for name in columns if name.startswith('genre_')]
     assert np.allclose(features[genre].sum(axis=1), 1)
-    assert np.isfinite(features[model['features']]).all().all()
+    assert np.isfinite(features[columns]).all().all()
     assert int(features.rating_count.sum()) == r['eda']['ratings']
-    for row in r['clustering']['candidates']:
-        assert sum(row['sizes'].values()) == len(features)
+    clustering_checks = {}
+    if r.get('clustering') is not None:
+        labels = pd.read_parquet(Path(r['derived_data_directory']) / 'user_clusters.parquet')
+        assert len(labels) == len(features) and labels.user_key.is_unique
+        assert np.array_equal(features.user_key.to_numpy(), labels.user_key.to_numpy())
+        with (Path(r['derived_data_directory']) / 'clustering_model.pkl').open('rb') as f:
+            model = pickle.load(f)
+        predictions = model['model'].predict(model['scaler'].transform(features[model['features']]))
+        assert np.array_equal(predictions, labels.cluster.to_numpy())
+        for row in r['clustering']['candidates']:
+            assert sum(row['sizes'].values()) == len(features)
+        clustering_checks = {'full_user_assignments_reconciled': len(features),
+                             'saved_model_reproduces_every_assignment': True}
     expected = {m['model']:m for m in r['baselines']['metrics'] if m['split']=='test'}
     global_mean = r['baselines']['training_global_mean']
     train_end = pd.Timestamp(r['baselines']['train_end_exclusive_utc']).to_pydatetime()
@@ -72,8 +78,8 @@ def validate_result():
     assert not any(o.get('output_type')=='error' for cell in code for o in cell['outputs'])
     result = {'created_at':timestamp(), 'run_id':r['run_id'], 'status':'success',
         'rating_count_reconciled':int(features.rating_count.sum()),
-        'full_user_assignments_reconciled':len(features),
-        'saved_model_reproduces_every_assignment':True,
+        'user_features_reconciled':len(features),
+        'clustering_performed':r.get('clustering') is not None, **clustering_checks,
         'all_genre_shares_sum_to_one':True, 'finite_features':True,
         'all_test_events_independently_checked':n,
         'numpy_test_metrics_match_sql':computed,
