@@ -10,6 +10,8 @@ services:
     ports:
       - "127.0.0.1:4213:4213"
     volumes:
+      # Read the local ZIP at startup without baking the dataset into the image.
+      - .:/input:ro
       - ./data:/app/data
       - ./warehouse:/app/warehouse
       - ./reports:/app/reports
@@ -27,6 +29,7 @@ services:
     ports:
       - "127.0.0.1:${AIRFLOW_PORT:-8080}:8080"
     volumes:
+      - .:/input:ro
       - ./data:/app/data
       - ./warehouse:/app/warehouse
       - ./reports:/app/reports
