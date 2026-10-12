@@ -1,0 +1,97 @@
+{
+  "target": "observed MovieLens rating on 0.5\u20135.0 scale",
+  "scope": "all rating events partitioned by UTC timestamp; no pre-split event sample",
+  "requested_fractions": [
+    0.7,
+    0.15,
+    0.15
+  ],
+  "train_end_exclusive_utc": "2007-12-08 01:20:38",
+  "test_start_inclusive_utc": "2010-12-06 22:25:11",
+  "tie_policy": "all equal timestamps stay in one partition; actual fractions may differ slightly",
+  "splits": [
+    {
+      "split": "train",
+      "ratings": 14000184,
+      "users": 100793,
+      "movies": 9696,
+      "first_rating": "1995-01-09 11:46:44",
+      "last_rating": "2007-12-08 01:20:29"
+    },
+    {
+      "split": "validation",
+      "ratings": 3000039,
+      "users": 22684,
+      "movies": 14888,
+      "first_rating": "2007-12-08 01:20:38",
+      "last_rating": "2010-12-06 22:24:33"
+    },
+    {
+      "split": "test",
+      "ratings": 3000040,
+      "users": 25561,
+      "movies": 25843,
+      "first_rating": "2010-12-06 22:25:11",
+      "last_rating": "2015-03-31 06:40:02"
+    }
+  ],
+  "training_global_mean": 3.510966748722731,
+  "training_ratings": 14000184,
+  "metrics": [
+    {
+      "split": "test",
+      "model": "global_average",
+      "ratings": 3000040,
+      "rmse": 1.0177351120274782,
+      "mae": 0.790086830207491,
+      "global_fallback_events": 834011,
+      "unseen_user_events": 2696842
+    },
+    {
+      "split": "test",
+      "model": "movie_average",
+      "ratings": 3000040,
+      "rmse": 0.9579916032678513,
+      "mae": 0.72982669989047,
+      "global_fallback_events": 834011,
+      "unseen_user_events": 2696842
+    },
+    {
+      "split": "validation",
+      "model": "global_average",
+      "ratings": 3000039,
+      "rmse": 1.0175448592134526,
+      "mae": 0.7828472541429489,
+      "global_fallback_events": 410522,
+      "unseen_user_events": 2474508
+    },
+    {
+      "split": "validation",
+      "model": "movie_average",
+      "ratings": 3000039,
+      "rmse": 0.9373668220487736,
+      "mae": 0.7122225113672136,
+      "global_fallback_events": 410522,
+      "unseen_user_events": 2474508
+    }
+  ],
+  "test_movie_cohorts": [
+    {
+      "cohort": "seen_movie",
+      "ratings": 2166029,
+      "movie_baseline_rmse": 0.9454558623765705,
+      "movie_baseline_mae": 0.7180861611703024
+    },
+    {
+      "cohort": "unseen_movie",
+      "ratings": 834011,
+      "movie_baseline_rmse": 0.9898071439238317,
+      "movie_baseline_mae": 0.7603183209157877
+    }
+  ],
+  "features": "only training-period global or per-movie mean; identifiers are group keys, not numeric predictors",
+  "cold_movie_policy": "unseen movies fall back to the training global mean",
+  "excluded": "TMDb current popularity/votes, tags/genome, and H2 full-history summaries",
+  "seconds": 1.2367229590017814,
+  "limitation": "Train-only baselines do not demonstrate H3 feature-model improvement; predictive features/model fitting remain future work."
+}

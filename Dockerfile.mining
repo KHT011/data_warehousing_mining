@@ -1,0 +1,6 @@
+FROM movielens-project:local
+COPY requirements-mining-preliminary.txt requirements-mining-preliminary.lock.txt requirements.lock.txt /app/
+RUN pip install --no-cache-dir -r requirements-mining-preliminary.txt -c requirements.lock.txt -c requirements-mining-preliminary.lock.txt && pip check
+ENV OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 MPLBACKEND=Agg
+ENTRYPOINT ["python", "-m", "mining.preliminary_bundle"]
+CMD []

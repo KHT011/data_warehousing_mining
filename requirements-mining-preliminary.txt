@@ -1,0 +1,8 @@
+# Preliminary EDA, full-user clustering and SQL rating baselines only.
+scikit-learn==1.6.1
+scipy==1.17.1
+joblib==1.6.0
+threadpoolctl==3.7.0
+nbformat==5.10.4
+nbclient==0.10.2
+ipykernel==6.29.5

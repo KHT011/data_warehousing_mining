@@ -51,5 +51,27 @@ services:
       timeout: 10s
       retries: 5
       start_period: 90s
+  mining:
+    profiles: ["mining"]
+    build:
+      context: .
+      dockerfile: Dockerfile.mining
+    image: movielens-mining:local
+    entrypoint: ["python", "-m", "mining.preliminary_bundle"]
+    init: true
+    cpus: 2.0
+    mem_limit: 4g
+    environment:
+      PYTHONPATH: /app/src
+      MPLBACKEND: Agg
+      OMP_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+    volumes:
+      - ./warehouse:/app/warehouse:ro
+      - ./src:/app/src:ro
+      - ./notebooks:/app/notebooks
+      - ./reports:/app/reports
+      - ./data/processed:/app/data/processed
 volumes:
   airflow-state:

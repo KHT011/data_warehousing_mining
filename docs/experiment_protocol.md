@@ -1,5 +1,26 @@
 # Experiment protocol
 
+## Current progress-report workflow
+
+The active preliminary workflow is `notebooks/05_mining_preliminary.ipynb`
+and `src/mining/preliminary.py`, run with the optional Docker `mining` profile.
+It uses all published ratings for EDA and chronological 70/15/15 baseline
+partitions, and all rating-active users for descriptive clustering. There is
+no event sample. Timestamps tied at split boundaries stay together. Global and
+movie-average baselines use training statistics only, with global fallback for
+unseen movies. The fixed 2,000-user subset is for silhouette computation only;
+other clustering metrics and seed stability use all users.
+
+Outputs and rerun commands are documented in `MINING_PRELIMINARY.md`. Current
+TMDb popularity/votes and full-history H2 descriptors are excluded from H3.
+
+## Retained inactive feature-model experiments
+
+The older sampled XGBoost/bias pipeline below is retained as historical code;
+it is not the active full-data progress-report workflow. Its sampling and
+leave-one-out feature approximation must be revised before using it for the
+team's future full-data chronological feature-model analysis.
+
 Regression target is an observed rating, not top-N recommendation. Select up to one million events using deterministic DuckDB hash(event ID || seed) before splitting. Record actual sample size, source run IDs and code hash. Sort by epoch and event ID; timestamp boundaries approximate 70/15/15 and keep ties together. Empty splits fail explicitly.
 
 Training-row user/movie means and counts exclude the row's own target. Singleton fallbacks also exclude the target from the training global mean. This is a leave-one-out approximation and can use later training-period labels; it is not strict earlier-event forecasting. Validation/test rows use training aggregates only. Encoded MovieLens genres are retrospective catalog descriptors. IDs are lookup keys, never continuous model inputs. Runtime/language are currently excluded from the primary experiment as enrichment is not required. Current TMDB popularity/votes and all tags are excluded.

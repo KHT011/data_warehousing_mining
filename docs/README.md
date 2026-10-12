@@ -96,7 +96,7 @@ src/etl/                        extract, transform, load, quality and smoke fixt
 src/utils/                      config, locking, UI and container startup
 src/pipeline.py                 shared five-stage flow and recovery
 src/analytics.py                five benchmarks and EDA
-src/mining/                     retained, inactive
+src/mining/                     active preliminary workflow; older models inactive
 warehouse/                      schema.sql, load_warehouse.sql, movielens.duckdb
 sql/                            OLAP, inspection and integrity SQL
 airflow/dags/                   one warehouse DAG
@@ -112,6 +112,6 @@ Spark's `.parquet` paths are directories containing part files. An unfinished tr
 
 `reports/results/warehouse.json` records the latest full workflow; `olap.json` and `olap.csv` contain warm-up plus five measured repetitions for fact and preaggregate queries, with result-equivalence checks. Historical results are preserved; they are not substituted for new verification. See `reports/results/IMPLEMENTATION.md` for this refactor's measured results and cleanup.
 
-Notebook files call the reusable modules; a notebook server is not added to the runtime. Mining dependencies are listed separately in `src/mining/requirements.txt` for a future Docker-only mining phase. Existing leakage controls remain in that inactive code.
+The executed progress notebook is `notebooks/05_mining_preliminary.ipynb`. The optional Docker `mining` profile runs it, reconciles every user assignment and test-rating error, and creates report sections/charts. See `MINING_PRELIMINARY.md` in the project root. Older feature-model notebooks/modules remain inactive and use a different experimental protocol; they are not the full-data progress-report results.
 
 Original assignment documents and implementation guidance remain in `docs/`. Historical evidence is in `reports/history.zip`; prior operational plans and reviews are in `docs/history.zip`. Both archives were checked against the original files' SHA-256 hashes before removing duplicates. This README describes the current workflow. Raw data, database files, credentials and generated outputs are excluded from the image and version control.

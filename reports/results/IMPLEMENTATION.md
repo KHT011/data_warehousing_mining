@@ -1,8 +1,8 @@
-# Simplification verification — 11 October 2026
+# Warehouse and preliminary mining verification — 12 October 2026
 
-The active flow is MovieLens CSV/cached TMDB → Spark → Parquet → DuckDB → OLAP. Airflow is integrated; mining source, leakage controls and historical results are retained inactive. No local software was installed and no live TMDB request was made.
+The active flow is MovieLens CSV/cached TMDB → Spark → Parquet → DuckDB → OLAP. Airflow is integrated, and a separate Docker mining service now executes preliminary EDA, clustering and chronological baselines. Older feature-model experiments remain inactive. The sections below distinguish earlier standalone verification from the current full Airflow and preliminary mining runs.
 
-## Measured full-data run
+## Earlier standalone full-data run — 11 October 2026
 
 - Full pipeline and signature comparison: **760.67 seconds**.
 - Ratings: **20,000,263**; warehouse users: **138,493**; movies: **27,278**.
@@ -34,7 +34,17 @@ One warm-up followed by five measured warm repetitions per query/variant. Fact a
 
 Detailed timings, results and EXPLAIN ANALYZE evidence are in `olap.json`, `olap.csv`, query-result CSVs and analysis text files.
 
-## Acceptance checks
+## Preliminary mining — 12 October 2026
+
+- Executed `notebooks/05_mining_preliminary.ipynb`: eight code cells, zero errors. The Docker mining profile reads the warehouse through a read-only mount/connection.
+- EDA and baselines use all 20,000,263 events; clustering uses all 138,493 users with 25 standardized behavioral/weighted-genre features. Only silhouette uses a fixed 2,000-user metric subset; Davies–Bouldin, Calinski–Harabasz and stability ARI use all users.
+- MiniBatchKMeans selected k=2 from k=2/3/4/5. Sizes: 78,148 and 60,345; silhouette 0.1020; full-user Davies–Bouldin 2.7988; Calinski–Harabasz 14,230.5; seed-42/43 ARI 0.4049. The groups overlap and are initialization-sensitive; H2 archetypes remain preliminary.
+- H3 chronological partitions are 14,000,184 training, 3,000,039 validation and 3,000,040 test ratings, with tied timestamps kept together. Test global-average RMSE/MAE: 1.0177/0.7901. Movie-average with global fallback: 0.9580/0.7298. All prediction statistics use training events only.
+- All test events were independently accumulated in NumPy and reproduced the SQL error metrics. The saved clustering model reproduced every assignment, user/genre totals reconciled, and the warehouse count/sum summary remained unchanged.
+- Six individual charts, two composite report figures, CSV tables, feature definitions, code snapshot, versions, and report sections are in `reports/results/mining_preliminary/`. Full local features/assignments/model are in `data/processed/mining_preliminary/`.
+- This is preliminary evidence; a supervised feature model has not yet been evaluated, so H3 improvement remains untested. The older sampled XGBoost modules remain inactive.
+
+## Earlier acceptance checks
 
 - **29 active tests passed in 202.82 seconds**, covering reconciliation, rejected input, broken references, stable keys, Type 3 history, API retries/cache, lock release, staged-source fingerprints and interrupted publication.
 - Airflow's real scheduler completed all five synthetic tasks successfully in **53.67 seconds**; no task retries were needed. `airflow.json` records task durations.

@@ -1,0 +1,24 @@
+{
+  "ratings": 20000263,
+  "rating_users": 138493,
+  "rated_movies": 26744,
+  "catalog_movies": 27278,
+  "first_rating": "1995-01-09 11:46:44",
+  "last_rating": "2015-03-31 06:40:02",
+  "mean_rating": 3.5255285642993797,
+  "most_common_rating": 4.0,
+  "user_activity_quantiles": {
+    "0.25": 35.0,
+    "0.5": 68.0,
+    "0.9": 334.0,
+    "0.99": 1113.0799999999872
+  },
+  "movie_activity_quantiles": {
+    "0.25": 3.0,
+    "0.5": 18.0,
+    "0.9": 1305.7000000000007,
+    "0.99": 14388.689999999995
+  },
+  "seconds": 1.1041559169971151,
+  "genre_grain": "fractional allocation of each rating across its MovieLens genres; total equals ratings"
+}

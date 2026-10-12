@@ -43,6 +43,8 @@ dist/
 !/reports/results/final-validation.json
 !/reports/results/airflow.json
 !/reports/results/ui.json
+!/reports/results/mining_preliminary/
+!/reports/results/mining_preliminary/**
 /airflow/logs/
 /airflow/airflow.cfg
 /airflow/airflow.db*

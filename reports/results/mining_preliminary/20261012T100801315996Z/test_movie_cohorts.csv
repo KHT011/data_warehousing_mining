@@ -1,0 +1,3 @@
+cohort,ratings,movie_baseline_rmse,movie_baseline_mae
+seen_movie,2166029,0.9454558623765705,0.7180861611703024
+unseen_movie,834011,0.9898071439238317,0.7603183209157877
