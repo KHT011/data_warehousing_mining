@@ -59,4 +59,4 @@ dist/
 Thumbs.db
 Desktop.ini
 
-/docs
+*.pdf
